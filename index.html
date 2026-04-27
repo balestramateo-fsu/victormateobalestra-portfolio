@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Victor Mateo Balestra — Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Syne:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #F2EDE4;
+      --cream-dark: #E8E0D3;
+      --ink: #1A1612;
+      --ink-soft: #3D3630;
+      --blue: #2563EB;
+      --blue-light: #3B7AF7;
+      --serif: 'Playfair Display', Georgia, serif;
+      --sans: 'Space Grotesk', Helvetica, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: var(--sans);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ── CURSOR ──────────────────────────────── */
+    #cursor-dot {
+      position: fixed; top: 0; left: 0;
+      width: 8px; height: 8px;
+      background: var(--blue);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s, height 0.2s, background 0.2s;
+    }
+    #cursor-ring {
+      position: fixed; top: 0; left: 0;
+      width: 36px; height: 36px;
+      border: 1.5px solid rgba(37,99,235,0.35);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+    }
+    #cursor-glow {
+      position: fixed; top: 0; left: 0;
+      width: 380px; height: 380px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9990;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(37,99,235,0.11) 0%, rgba(37,99,235,0.03) 45%, transparent 70%);
+    }
+    .hoverable { cursor: none; }
+    body.cursor-hover #cursor-dot { width: 14px; height: 14px; background: var(--blue-light); }
+    body.cursor-hover #cursor-ring { transform: translate(-50%,-50%) scale(1.6); border-color: rgba(37,99,235,0.6); }
+
+    /* ── NAV ─────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.4rem 3rem;
+    }
+    nav::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(242,237,228,0.92) 60%, transparent 100%);
+      pointer-events: none;
+    }
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 1.05rem; font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--ink); text-decoration: none;
+      position: relative;
+    }
+    .nav-logo span { color: var(--blue); }
+    .nav-links {
+      display: flex; gap: 2.5rem;
+      list-style: none; position: relative;
+    }
+    .nav-links a {
+      font-size: 0.73rem; font-weight: 500;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--ink-soft); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--blue); }
+
+    /* ── HERO ────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: grid; grid-template-columns: 1fr 1fr;
+      align-items: center; padding: 0 3rem; gap: 2rem;
+      overflow: hidden;
+    }
+    .hero-left { padding-top: 5rem; }
+    .hero-eyebrow {
+      font-size: 0.73rem; font-weight: 600;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--blue); margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: 0.75rem;
+      opacity: 0; transform: translateY(20px);
+      animation: fadeUp 0.8s 0.3s forwards;
+    }
+    .hero-eyebrow::before {
+      content: ''; display: block;
+      width: 32px; height: 1px; background: var(--blue);
+    }
+    .hero-name {
+      font-family: var(--serif);
+      font-size: clamp(3.2rem, 6.5vw, 6rem);
+      font-weight: 900; line-height: 0.93;
+      letter-spacing: -0.03em; color: var(--ink);
+      margin-bottom: 1.2rem;
+      opacity: 0; animation: fadeUp 0.9s 0.5s forwards;
+    }
+    .hero-name em { font-style: italic; color: var(--blue); }
+    .hero-tagline {
+      font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+      font-weight: 300; line-height: 1.7; color: var(--ink-soft);
+      max-width: 40ch; margin-bottom: 2.5rem;
+      opacity: 0; animation: fadeUp 0.9s 0.7s forwards;
+    }
+    .hero-actions {
+      display: flex; align-items: center; gap: 1.5rem;
+      opacity: 0; animation: fadeUp 0.9s 0.9s forwards;
+    }
+    .hero-cta {
+      display: inline-flex; align-items: center; gap: 0.75rem;
+      background: var(--blue); color: #fff;
+      font-family: var(--sans); font-size: 0.78rem;
+      font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 1rem 2rem; text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .hero-cta:hover { background: var(--ink); transform: translateY(-2px); }
+    .hero-cta svg { transition: transform 0.2s; }
+    .hero-cta:hover svg { transform: translateX(4px); }
+    .hero-loc {
+      font-size: 0.72rem; font-weight: 400;
+      letter-spacing: 0.08em; color: var(--ink-soft);
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+    .hero-loc svg { color: var(--blue); }
+
+    .hero-right {
+      height: 100vh; display: flex;
+      align-items: center; justify-content: center;
+      position: relative;
+    }
+    .hero-visual {
+      width: 100%; height: 72vh;
+      background: var(--cream-dark);
+      position: relative; overflow: hidden;
+      opacity: 0; animation: fadeIn 1.2s 0.6s forwards;
+    }
+    .hero-visual-stripe {
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        135deg, transparent, transparent 28px,
+        rgba(37,99,235,0.05) 28px, rgba(37,99,235,0.05) 29px
+      );
+    }
+    .hero-visual-label {
+      position: absolute; bottom: 1.5rem; left: 1.5rem;
+      font-family: monospace; font-size: 0.68rem;
+      color: var(--ink-soft); opacity: 0.5;
+    }
+    .hero-tag {
+      position: absolute; top: 2rem; right: 2rem;
+      font-size: 0.65rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--blue); border: 1px solid var(--blue);
+      padding: 0.4rem 0.8rem; background: var(--cream);
+    }
+    .hero-scroll {
+      position: absolute; bottom: 2.5rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      opacity: 0; animation: fadeIn 1s 1.4s forwards;
+    }
+    .hero-scroll span {
+      font-size: 0.63rem; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--ink-soft);
+    }
+    .scroll-line {
+      width: 1px; height: 48px;
+      background: linear-gradient(to bottom, var(--ink-soft), transparent);
+      animation: scrollPulse 2s infinite;
+    }
+
+    /* ── MARQUEE ─────────────────────────────── */
+    .marquee-wrap {
+      overflow: hidden;
+      border-top: 1px solid rgba(26,22,18,0.08);
+      border-bottom: 1px solid rgba(26,22,18,0.08);
+      padding: 0.9rem 0; background: var(--cream-dark);
+    }
+    .marquee-track {
+      display: flex; gap: 3rem;
+      white-space: nowrap; width: max-content;
+      animation: marquee 24s linear infinite;
+    }
+    .marquee-item {
+      font-family: var(--serif); font-size: 0.95rem;
+      font-style: italic; color: var(--ink-soft);
+      display: flex; align-items: center; gap: 3rem;
+    }
+    .marquee-item::after { content: '◆'; font-size: 0.45rem; color: var(--blue); }
+
+    /* ── SECTION COMMON ──────────────────────── */
+    .section-index {
+      font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--blue); margin-bottom: 1rem;
+    }
+    .section-title {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 700; line-height: 1.05;
+      letter-spacing: -0.02em;
+    }
+
+    /* ── ABOUT ───────────────────────────────── */
+    #about {
+      padding: 9rem 3rem 8rem;
+      display: grid; grid-template-columns: 1fr 2fr;
+      gap: 4rem; align-items: start;
+      border-top: 1px solid rgba(26,22,18,0.1);
+    }
+    .about-body { display: flex; flex-direction: column; gap: 1.5rem; }
+    .about-lead {
+      font-family: var(--serif); font-style: italic;
+      font-size: clamp(1.2rem, 2vw, 1.65rem);
+      font-weight: 400; line-height: 1.45; color: var(--ink);
+    }
+    .about-text {
+      font-size: 0.97rem; font-weight: 300;
+      line-height: 1.85; color: var(--ink-soft); max-width: 62ch;
+    }
+    .about-stats {
+      display: flex; gap: 3rem; margin-top: 0.5rem;
+      padding-top: 2rem; border-top: 1px solid rgba(26,22,18,0.1);
+    }
+    .stat-num {
+      font-family: var(--serif); font-size: 2.4rem;
+      font-weight: 700; color: var(--blue); line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+    .stat-label {
+      font-size: 0.72rem; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+    .about-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+    .tag {
+      font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.38rem 0.9rem;
+      border: 1px solid var(--blue); color: var(--blue);
+    }
+
+    /* ── EXPERIENCE ──────────────────────────── */
+    #experience {
+      padding: 8rem 3rem;
+      border-top: 1px solid rgba(26,22,18,0.1);
+    }
+    .exp-header {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 2rem; margin-bottom: 5rem; align-items: end;
+    }
+    .exp-intro {
+      font-size: 0.97rem; font-weight: 300;
+      line-height: 1.8; color: var(--ink-soft);
+    }
+    .exp-item {
+      display: grid; grid-template-columns: 150px 1fr auto;
+      gap: 2rem; padding: 2.2rem 0;
+      border-bottom: 1px solid rgba(26,22,18,0.08);
+      align-items: start; transition: background 0.2s;
+    }
+    .exp-item:first-of-type { border-top: 1px solid rgba(26,22,18,0.08); }
+    .exp-year {
+      font-size: 0.72rem; font-weight: 500;
+      letter-spacing: 0.08em; color: var(--blue); padding-top: 0.2rem;
+    }
+    .exp-role {
+      font-family: var(--serif); font-size: 1.25rem;
+      font-weight: 600; letter-spacing: -0.01em; margin-bottom: 0.2rem;
+    }
+    .exp-company {
+      font-size: 0.82rem; font-weight: 500;
+      color: var(--blue); margin-bottom: 0.7rem;
+    }
+    .exp-desc {
+      font-size: 0.88rem; font-weight: 300;
+      line-height: 1.75; color: var(--ink-soft); max-width: 52ch;
+    }
+    .exp-arrow {
+      color: var(--ink-soft); opacity: 0.25;
+      transition: opacity 0.2s, transform 0.2s; padding-top: 0.2rem;
+    }
+    .exp-item:hover .exp-arrow { opacity: 1; transform: translateX(4px); color: var(--blue); }
+
+    /* ── INSOMNIAC ESSAY ─────────────────────── */
+    #insomniac {
+      padding: 8rem 3rem;
+      background: var(--ink); color: var(--cream);
+    }
+    #insomniac .section-index { color: var(--blue-light); }
+    #insomniac .section-title { color: var(--cream); }
+    .essay-subhead {
+      font-size: 0.78rem; font-weight: 500;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(242,237,228,0.45); margin-top: 0.75rem; margin-bottom: 0;
+    }
+    .essay-grid {
+      display: grid; grid-template-columns: 1fr 1.6fr;
+      gap: 6rem; margin-top: 4rem; align-items: start;
+    }
+    .essay-sticky { position: sticky; top: 8rem; }
+    .essay-quote {
+      font-family: var(--serif);
+      font-size: clamp(1.3rem, 2.2vw, 1.85rem);
+      font-style: italic; line-height: 1.45; color: var(--cream);
+      margin-bottom: 2rem;
+      border-left: 3px solid var(--blue); padding-left: 1.5rem;
+    }
+    .essay-meta { display: flex; flex-direction: column; gap: 0.5rem; }
+    .essay-note {
+      font-size: 0.7rem; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: rgba(242,237,228,0.35);
+    }
+    .essay-body p {
+      font-size: clamp(0.93rem, 1.2vw, 1.03rem);
+      font-weight: 300; line-height: 1.9;
+      color: rgba(242,237,228,0.78); margin-bottom: 1.8rem;
+    }
+    .essay-body p:first-child {
+      font-family: var(--serif);
+      font-size: clamp(1.05rem, 1.7vw, 1.25rem);
+      font-style: italic; color: var(--cream);
+    }
+    .essay-body strong { color: var(--cream); font-weight: 600; }
+    .essay-hl {
+      display: inline; background: var(--blue);
+      color: #fff; padding: 0.05em 0.3em;
+    }
+
+    /* ── NIGHTLIFE ───────────────────────────── */
+    #nightlife {
+      padding: 8rem 3rem;
+      border-top: 1px solid rgba(26,22,18,0.1);
+    }
+    .nightlife-header {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 2rem; margin-bottom: 5rem; align-items: end;
+    }
+    .nightlife-intro {
+      font-size: 0.97rem; font-weight: 300;
+      line-height: 1.8; color: var(--ink-soft);
+    }
+    .nightlife-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+    }
+    .nl-card {
+      background: var(--cream-dark); padding: 2.5rem 2rem;
+      position: relative; overflow: hidden;
+      transition: transform 0.3s cubic-bezier(.22,.68,0,1.2);
+    }
+    .nl-card:hover { transform: translateY(-6px); }
+    .nl-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 3px; background: var(--blue);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.35s ease;
+    }
+    .nl-card:hover::before { transform: scaleX(1); }
+    .card-num {
+      font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.15em; color: var(--blue); margin-bottom: 1.5rem;
+    }
+    .card-title {
+      font-family: var(--serif); font-size: 1.2rem;
+      font-weight: 700; line-height: 1.2;
+      letter-spacing: -0.01em; margin-bottom: 0.9rem;
+    }
+    .card-desc {
+      font-size: 0.87rem; font-weight: 300;
+      line-height: 1.75; color: var(--ink-soft);
+    }
+    .nl-card.featured {
+      grid-column: span 2; background: var(--blue);
+      color: #fff; display: grid;
+      grid-template-columns: 1fr auto; gap: 2rem; padding: 3rem;
+    }
+    .nl-card.featured .card-num { color: rgba(255,255,255,0.45); }
+    .nl-card.featured .card-title { color: #fff; font-size: 1.5rem; }
+    .nl-card.featured .card-desc { color: rgba(255,255,255,0.75); }
+    .nl-card.featured .card-badge {
+      align-self: start;
+      font-size: 0.65rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      background: rgba(255,255,255,0.15); color: #fff;
+      padding: 0.5rem 1rem; white-space: nowrap;
+    }
+
+    /* ── CONTACT ─────────────────────────────── */
+    #contact {
+      padding: 8rem 3rem 6rem;
+      border-top: 1px solid rgba(26,22,18,0.1);
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 6rem; align-items: start;
+    }
+    .contact-tagline {
+      font-family: var(--serif);
+      font-size: clamp(1.4rem, 2.8vw, 2.4rem);
+      font-weight: 700; line-height: 1.15;
+      letter-spacing: -0.02em; margin: 1.5rem 0;
+    }
+    .contact-tagline em { font-style: italic; color: var(--blue); }
+    .contact-sub {
+      font-size: 0.93rem; font-weight: 300;
+      line-height: 1.8; color: var(--ink-soft); margin-bottom: 2.5rem;
+    }
+    .contact-links { display: flex; flex-direction: column; gap: 0; }
+    .contact-link {
+      display: flex; align-items: center; gap: 0.8rem;
+      font-size: 0.78rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--ink); text-decoration: none;
+      padding: 0.9rem 0;
+      border-bottom: 1px solid rgba(26,22,18,0.1);
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .contact-link:hover { color: var(--blue); border-color: var(--blue); }
+
+    form { display: flex; flex-direction: column; }
+    .form-group {
+      position: relative; border-bottom: 1px solid rgba(26,22,18,0.15);
+      transition: border-color 0.2s;
+    }
+    .form-group:focus-within { border-color: var(--blue); }
+    .form-group label {
+      display: block; font-size: 0.63rem; font-weight: 600;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--blue); padding: 1.1rem 0 0.25rem;
+    }
+    .form-group input,
+    .form-group textarea {
+      width: 100%; background: transparent; border: none; outline: none;
+      font-family: var(--sans); font-size: 0.97rem;
+      font-weight: 400; color: var(--ink);
+      padding: 0 0 1rem; resize: none; cursor: none;
+    }
+    .form-group textarea { min-height: 110px; }
+    .form-submit { margin-top: 2rem; display: flex; align-items: center; gap: 1.2rem; }
+    .btn-submit {
+      background: var(--ink); color: var(--cream); border: none;
+      font-family: var(--sans); font-size: 0.78rem;
+      font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 1.1rem 2.4rem; cursor: none;
+      display: flex; align-items: center; gap: 0.75rem;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .btn-submit:hover { background: var(--blue); transform: translateY(-2px); }
+    .form-note { font-size: 0.7rem; color: var(--ink-soft); opacity: 0.55; }
+    #success-msg {
+      display: none; font-family: var(--serif);
+      font-size: 1.2rem; font-style: italic;
+      color: var(--blue); padding: 2rem 0;
+    }
+
+    /* ── FOOTER ──────────────────────────────── */
+    footer {
+      padding: 2rem 3rem;
+      border-top: 1px solid rgba(26,22,18,0.1);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    footer p { font-size: 0.7rem; color: var(--ink-soft); opacity: 0.45; letter-spacing: 0.06em; }
+
+    /* ── SCROLL REVEALS ──────────────────────── */
+    .reveal {
+      opacity: 0; transform: translateY(32px);
+      transition: opacity 0.85s cubic-bezier(.22,.68,0,1), transform 0.85s cubic-bezier(.22,.68,0,1);
+    }
+    .reveal.in { opacity: 1; transform: translateY(0); }
+    .reveal-left {
+      opacity: 0; transform: translateX(-32px);
+      transition: opacity 0.9s cubic-bezier(.22,.68,0,1), transform 0.9s cubic-bezier(.22,.68,0,1);
+    }
+    .reveal-left.in { opacity: 1; transform: translateX(0); }
+    .d1 { transition-delay: 0.1s; }
+    .d2 { transition-delay: 0.2s; }
+    .d3 { transition-delay: 0.3s; }
+    .d4 { transition-delay: 0.4s; }
+    .d5 { transition-delay: 0.5s; }
+
+    /* ── KEYFRAMES ───────────────────────────── */
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { to { opacity: 1; } }
+    @keyframes scrollPulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  </style>
+</head>
+<body>
+
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+<div id="cursor-glow"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">Victor<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#insomniac">Why Insomniac</a></li>
+    <li><a href="#nightlife">Nightlife</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ══ HERO ══════════════════════════════════ -->
+<section id="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">Event Producer · Brand Builder · Curious</p>
+    <h1 class="hero-name">Victor<br />Mateo<br /><em>Balestra</em></h1>
+    <p class="hero-tagline">Industrial Engineering student building experiences people feel long after the last song ends. Based between Valencia, Spain and Miami, FL.</p>
+    <div class="hero-actions">
+      <a href="#contact" class="hero-cta">
+        Get in touch
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <span class="hero-loc">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="5" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M6 1C3.79 1 2 2.79 2 5c0 2.5 4 7 4 7s4-4.5 4-7c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.2"/></svg>
+        Valencia, Spain & Miami, FL
+      </span>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-visual">
+      <img src="victor_hero.png" alt="Victor Mateo Balestra" style="width:100%;height:100%;object-fit:cover;object-position:center 38%;display:block;" />
+      <span class="hero-tag">FSU · Honors · 3.89 GPA</span>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="marquee-item">Event Production</span>
+    <span class="marquee-item">Brand Strategy</span>
+    <span class="marquee-item">Nightlife Culture</span>
+    <span class="marquee-item">Hospitality & Service</span>
+    <span class="marquee-item">Industrial Engineering</span>
+    <span class="marquee-item">Bilingual — EN / ES</span>
+    <span class="marquee-item">Community Building</span>
+    <span class="marquee-item">Afro House · Melodic House</span>
+    <span class="marquee-item">Event Production</span>
+    <span class="marquee-item">Brand Strategy</span>
+    <span class="marquee-item">Nightlife Culture</span>
+    <span class="marquee-item">Hospitality & Service</span>
+    <span class="marquee-item">Industrial Engineering</span>
+    <span class="marquee-item">Bilingual — EN / ES</span>
+    <span class="marquee-item">Community Building</span>
+    <span class="marquee-item">Afro House · Melodic House</span>
+  </div>
+</div>
+
+<!-- ══ ABOUT ══════════════════════════════════ -->
+<section id="about">
+  <div class="reveal-left">
+    <p class="section-index">01 — About</p>
+    <h2 class="section-title">Who<br />I am.</h2>
+  </div>
+  <div class="about-body">
+    <p class="about-lead reveal">"I've always been drawn to the machinery behind magic — the logistics, the sensory details, the split-second decisions that make an experience feel inevitable."</p>
+    <p class="about-text reveal d1">
+      I'm a Florida State University Industrial Engineering student (Honors College, 3.89 GPA) currently studying abroad in Valencia, Spain. What started as a curiosity about how great hospitality works — honed across Michelin kitchens, luxury resorts, and iconic venues on three continents — has evolved into a full-on obsession with live events and nightlife culture.
+    </p>
+    <p class="about-text reveal d2">
+      I'm bilingual in English and Spanish, and I've built a reputation for applying the same obsessive attention to detail I learned in professional kitchens — volume curves, lighting placement, the smell that greets you at the door — to the events I help produce with DERALI in Valencia. I think about every touchpoint, from the walk-in to the last song, as an opportunity to make someone feel something.
+    </p>
+    <div class="about-stats reveal d3">
+      <div>
+        <div class="stat-num">5+</div>
+        <div class="stat-label">Events Produced</div>
+      </div>
+      <div>
+        <div class="stat-num">1600+</div>
+        <div class="stat-label">Crowd Capacity</div>
+      </div>
+      <div>
+        <div class="stat-num">3</div>
+        <div class="stat-label">Continents Worked</div>
+      </div>
+    </div>
+    <div class="about-tags reveal d4">
+      <span class="tag">Event Logistics</span>
+      <span class="tag">Audience Development</span>
+      <span class="tag">Brand Partnerships</span>
+      <span class="tag">Social Media Content</span>
+      <span class="tag">Guest Experience Design</span>
+      <span class="tag">Bilingual EN/ES</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══ EXPERIENCE ══════════════════════════════ -->
+<section id="experience">
+  <div class="exp-header">
+    <div>
+      <p class="section-index reveal">02 — Experience</p>
+      <h2 class="section-title reveal">Where<br />I've been.</h2>
+    </div>
+    <p class="exp-intro reveal d2">From Michelin kitchens to Valencia club nights — every role has sharpened a different edge of my craft in building guest experiences.</p>
+  </div>
+
+  <div class="exp-item reveal">
+    <span class="exp-year">Spring 2026 — Present</span>
+    <div>
+      <h3 class="exp-role">Promoter & Events Coordinator</h3>
+      <p class="exp-company">DERALI Music and Events — Valencia, Spain</p>
+      <p class="exp-desc">Plan and execute promotional campaigns for nightlife and cultural events across Valencia's café and restaurant scene. Coordinate end-to-end logistics — venue liaison, artist scheduling, day-of operations — for 5+ events over three months with crowds of 800–1,600+. Drive attendance through Instagram content, street marketing, and word-of-mouth outreach.</p>
+    </div>
+    <svg class="exp-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+
+  <div class="exp-item reveal d1">
+    <span class="exp-year">Summer 2025</span>
+    <div>
+      <h3 class="exp-role">Prep & Line Cook</h3>
+      <p class="exp-company">The Resort at Paws Up (Two Michelin Key, Four Star Forbes) — Greenough, MT</p>
+      <p class="exp-desc">Executed seasonal menus at a luxury glamping resort serving 200+ guests nightly. Trained under Michelin-experienced executive chefs in high-end plating and guest-facing service standards. Shadowed front-of-house to build a full understanding of hospitality from both sides of the pass.</p>
+    </div>
+    <svg class="exp-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+
+  <div class="exp-item reveal d2">
+    <span class="exp-year">Spring 2025</span>
+    <div>
+      <h3 class="exp-role">Prep & Line Cook</h3>
+      <p class="exp-company">Bondi Icebergs Club — Bondi Beach, Sydney, Australia</p>
+      <p class="exp-desc">Worked high-volume service in one of Australia's most iconic dining destinations. Maintained consistency and speed during peak periods while broadening my perspective on how different markets approach service and the guest experience.</p>
+    </div>
+    <svg class="exp-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+
+  <div class="exp-item reveal d3">
+    <span class="exp-year">Fall 2024</span>
+    <div>
+      <h3 class="exp-role">Stage / Apprentice</h3>
+      <p class="exp-company">Ariete (Michelin Star) — Coconut Grove, FL</p>
+      <p class="exp-desc">Trained under front- and back-of-house teams in fine-dining operations, service flow, and kitchen efficiency. Developed the obsessive attention to detail around guest experience that now directly informs how I approach event production.</p>
+    </div>
+    <svg class="exp-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+
+  <div class="exp-item reveal d4">
+    <span class="exp-year">Summer 2024</span>
+    <div>
+      <h3 class="exp-role">Founder & Caterer</h3>
+      <p class="exp-company">Independent Catering Service — Miami, FL</p>
+      <p class="exp-desc">Launched a private catering business serving 10–20 guest events. Managed menus, sourcing, budgeting, cooking, and client relations end-to-end. Generated over $6,000 in revenue. Applied professional hospitality standards to every dinner, treating each event as a complete guest experience.</p>
+    </div>
+    <svg class="exp-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+</section>
+
+<!-- ══ INSOMNIAC ESSAY ════════════════════════ -->
+<section id="insomniac">
+  <p class="section-index reveal">03 — Why Insomniac</p>
+  <h2 class="section-title reveal">The reason.</h2>
+  <p class="essay-subhead reveal d1">Personal Statement</p>
+  <div class="essay-grid">
+    <div class="essay-sticky reveal-left">
+      <blockquote class="essay-quote">
+        "Insomniac doesn't just throw parties. It transforms unconventional spaces into worlds — and invites you to live inside them."
+      </blockquote>
+      <div class="essay-meta">
+        <span class="essay-note"></span>
+        <span class="essay-note">Victor Mateo Balestra · 2026</span>
+      </div>
+    </div>
+    <div class="essay-body">
+      <p class="reveal">
+        What excites me most about Insomniac is that you don't just produce events — you build immersive experiences.
+      </p>
+      <p class="reveal d1">
+        By transforming unconventional spaces — like a 1932 mattress factory in Hialeah into <strong>Factory Town</strong> — you blend a city's raw character with exceptional design and sound to create unforgettable, music-led environments in unexpected places. That philosophy isn't a tagline. It's a <span class="essay-hl">civic commitment</span>.
+      </p>
+      <p class="reveal d2">
+        Living abroad has exposed me to how different cities approach music and nightlife culture — and it's made me appreciate how intentionally Insomniac builds its worlds. I'm currently in Valencia, Spain working with an events company called DERALI, where we produce daytime "coffee parties" and dance events featuring afro house and melodic house in repurposed cafés and restaurants. When I first arrived in Valencia in September, I was craving a community of creatives and like-minded people. Finding DERALI showed me what was possible when you <strong>build a gathering point for interesting people who otherwise may never cross paths</strong>.
+      </p>
+      <p class="reveal d3">
+        Since then, I've been infatuated with what goes on behind the scenes. I took the experience and skills I learned working in Michelin kitchens and applied that hospitality mindset to the events space — planning the small details like the volume curve throughout a venue, the lighting around the instagrammable mirrors, the smell that hits guests when they walk in, and even the clever individualisation of the free drink voucher.
+      </p>
+      <p class="reveal d4">
+        Seeing Insomniac elevate that same obsessive philosophy of world-building — at varying scales from EDC to Factory Town — while keeping the culture authentic and the experience second to none, is exactly what makes me want to be part of the team.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ NIGHTLIFE ════════════════════════════════ -->
+<section id="nightlife">
+  <div class="nightlife-header">
+    <div>
+      <p class="section-index reveal">04 — Nightlife Experience</p>
+      <h2 class="section-title reveal">What I<br />know cold.</h2>
+    </div>
+    <p class="nightlife-intro reveal d2">Hands-on competencies built producing and promoting electronic music events across Valencia's international creative scene.</p>
+  </div>
+  <div class="nightlife-grid">
+
+    <div class="nl-card featured reveal">
+      <div>
+        <p class="card-num">01 — Primary Role</p>
+        <h3 class="card-title">DERALI Music and Events — Promoter & Coordinator</h3>
+        <p class="card-desc">Help produce and promote daytime electronic music "coffee parties" across Valencia's café and restaurant scene — featuring afro house and melodic house in repurposed spaces during afternoon hours. An alternative to traditional late-night nightlife that's built a loyal grassroots community across Valencia's international creative scene. My involvement spans event logistics, venue coordination, audience development, social media content, and day-of execution.</p>
+      </div>
+      <span class="card-badge">Valencia, Spain · 2026</span>
+    </div>
+
+    <div class="nl-card reveal d1">
+      <p class="card-num">02</p>
+      <h3 class="card-title">Venue Coordination & Logistics</h3>
+      <p class="card-desc">Coordinate directly with venue owners to secure and prepare spaces — managing sound, layout, capacity, and guest flow for crowds up to 1,600+. Developed the runbook and checklist systems used across all DERALI events.</p>
+    </div>
+
+    <div class="nl-card reveal d2">
+      <p class="card-num">03</p>
+      <h3 class="card-title">Social Media & Promotion</h3>
+      <p class="card-desc">Developed and executed Instagram content strategies and on-the-ground promotion campaigns that have helped grow DERALI's following and consistently sell out limited-capacity ticketed events in Valencia.</p>
+    </div>
+
+    <div class="nl-card reveal d1">
+      <p class="card-num">04</p>
+      <h3 class="card-title">Sensory Experience Design</h3>
+      <p class="card-desc">Contribute to creative direction across all guest touchpoints — from visual branding and poster design to in-venue sensory details: volume curves, scent, lighting placement, and the personalisation of guest incentives.</p>
+    </div>
+
+    <div class="nl-card reveal d2">
+      <p class="card-num">05</p>
+      <h3 class="card-title">Hospitality-to-Events Crossover</h3>
+      <p class="card-desc">The obsessive detail orientation from Michelin kitchens (Ariete, Paws Up, Bondi Icebergs) directly translates to events: every touchpoint, from the walk-in to the last song, is an opportunity to make someone feel something.</p>
+    </div>
+
+    <div class="nl-card reveal d3">
+      <p class="card-num">06</p>
+      <h3 class="card-title">Community & Brand Building</h3>
+      <p class="card-desc">Working closely with the DERALI founding team on audience development, partnership outreach, and scaling the brand beyond its original coffee shop format while keeping the grassroots community intact.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ CONTACT ════════════════════════════════ -->
+<section id="contact">
+  <div class="reveal-left">
+    <p class="section-index">05 — Contact</p>
+    <h2 class="contact-tagline">Let's build<br /><em>something</em><br />together.</h2>
+    <p class="contact-sub">Whether you want to discuss a role at Insomniac, a project, or just talk about what makes a great event — I'm always open to a conversation.</p>
+    <div class="contact-links">
+      <a href="mailto:balestramateo@gmail.com" class="contact-link">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M1 4l7 5 7-5" stroke="currentColor" stroke-width="1.3"/></svg>
+        balestramateo@gmail.com
+      </a>
+      <a href="tel:+17863009646" class="contact-link">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 2h3l1.5 3.5-2 1.2A8 8 0 009.3 10.5l1.2-2L14 10v3a1 1 0 01-1 1A12 12 0 012 3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        (786) 300-9646
+      </a>
+      <a href="https://www.linkedin.com/in/victor-balestra-852b032a2/" target="_blank" class="contact-link">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M5 7v4M5 5v.5M8 11V8.5c0-1 .5-1.5 1.5-1.5S11 8 11 9v2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        LinkedIn
+      </a>
+      <a href="Victor_Balestra_Resume.pdf" download class="contact-link">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 12h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Download Resume
+      </a>
+    </div>
+  </div>
+
+  <div class="reveal d2">
+    <form id="contact-form">
+      <div class="form-group">
+        <label for="name">Your name</label>
+        <input type="text" id="name" name="name" placeholder="Jane Smith" required />
+      </div>
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <input type="email" id="email" name="email" placeholder="jane@insomniac.com" required />
+      </div>
+      <div class="form-group">
+        <label for="subject">Subject</label>
+        <input type="text" id="subject" name="subject" placeholder="Internship opportunity / Project / Hello" />
+      </div>
+      <div class="form-group">
+        <label for="message">Message</label>
+        <textarea id="message" name="message" placeholder="Tell me about what you're working on…" required></textarea>
+      </div>
+      <div class="form-submit">
+        <button type="submit" class="btn-submit">
+          Send message
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M10 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <span class="form-note">I typically respond within 24 hours.</span>
+      </div>
+    </form>
+    <p id="success-msg">Thank you — message received. I'll be in touch soon.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 Victor Mateo Balestra</p>
+  <p>Valencia, Spain · Miami, FL</p>
+</footer>
+
+<div id="tweaks-root"></div>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "serifFont": "Playfair Display",
+  "sansFont": "Space Grotesk",
+  "accentColor": "#2563EB",
+  "bgColor": "#F2EDE4",
+  "heroSize": 6,
+  "showStats": true,
+  "marqueeSpeed": 24
+}/*EDITMODE-END*/;
+
+function PortfolioTweaks() {
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+  React.useEffect(() => {
+    document.documentElement.style.setProperty('--blue', t.accentColor);
+    document.documentElement.style.setProperty('--blue-light', t.accentColor);
+    document.documentElement.style.setProperty('--cream', t.bgColor);
+    document.documentElement.style.setProperty('--serif', `'${t.serifFont}', Georgia, serif`);
+    document.documentElement.style.setProperty('--sans', `'${t.sansFont}', Helvetica, sans-serif`);
+    const heroName = document.querySelector('.hero-name');
+    if (heroName) heroName.style.fontSize = `clamp(3rem, ${t.heroSize}vw, ${t.heroSize * 1.1}rem)`;
+    const stats = document.querySelector('.about-stats');
+    if (stats) stats.style.display = t.showStats ? '' : 'none';
+    const track = document.querySelector('.marquee-track');
+    if (track) track.style.animationDuration = t.marqueeSpeed + 's';
+  }, [t]);
+
+  return (
+    <TweaksPanel title="Tweaks">
+      <TweakSection label="Typography">
+        <TweakSelect label="Serif Font"
+          options={["Playfair Display","DM Serif Display","Cormorant Garamond"]}
+          value={t.serifFont} onChange={v => setTweak('serifFont', v)} />
+        <TweakSelect label="Sans Font"
+          options={["Space Grotesk","Syne","Outfit"]}
+          value={t.sansFont} onChange={v => setTweak('sansFont', v)} />
+        <TweakSlider label="Hero Name Scale" min={4} max={9} step={0.5}
+          value={t.heroSize} onChange={v => setTweak('heroSize', v)} />
+      </TweakSection>
+      <TweakSection label="Color">
+        <TweakColor label="Accent Color"
+          value={t.accentColor} onChange={v => setTweak('accentColor', v)} />
+        <TweakColor label="Background"
+          value={t.bgColor} onChange={v => setTweak('bgColor', v)} />
+      </TweakSection>
+      <TweakSection label="Layout">
+        <TweakToggle label="Show Stats Row"
+          value={t.showStats} onChange={v => setTweak('showStats', v)} />
+        <TweakSlider label="Marquee Speed (s)" min={8} max={60} step={2}
+          value={t.marqueeSpeed} onChange={v => setTweak('marqueeSpeed', v)} />
+      </TweakSection>
+    </TweaksPanel>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('tweaks-root')).render(<PortfolioTweaks />);
+</script>
+
+<script>
+  // ── CURSOR ──────────────────────────────────
+  const dot = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  const glow = document.getElementById('cursor-glow');
+  let mx = -300, my = -300;
+  let rx = -300, ry = -300, gx = -300, gy = -300;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    dot.style.left = mx + 'px';
+    dot.style.top = my + 'px';
+  });
+
+  function animateCursor() {
+    rx += (mx - rx) * 0.14; ry += (my - ry) * 0.14;
+    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+    gx += (mx - gx) * 0.07; gy += (my - gy) * 0.07;
+    glow.style.left = gx + 'px'; glow.style.top = gy + 'px';
+    requestAnimationFrame(animateCursor);
+  }
+  animateCursor();
+
+  document.querySelectorAll('a, button, .nl-card, .exp-item').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+  });
+
+  // ── SCROLL REVEAL ───────────────────────────
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+  document.querySelectorAll('.reveal, .reveal-left').forEach(el => obs.observe(el));
+
+  // ── CONTACT FORM ────────────────────────────
+  document.getElementById('contact-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    this.style.display = 'none';
+    document.getElementById('success-msg').style.display = 'block';
+  });
+</script>
+</body>
+</html>
